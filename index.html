@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Puzzle Quest</title>
+<style>
+body{font-family:Arial;background:linear-gradient(#1e3c72,#2a5298);color:white;text-align:center}
+#board{display:grid;grid-template-columns:repeat(4,80px);gap:5px;justify-content:center;margin:20px}
+.tile{width:80px;height:80px;background:#fff;color:#000;font-size:30px;font-weight:bold;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.empty{background:#333}
+button{padding:10px 20px;font-size:16px}
+</style>
+</head>
+<body>
+<h1>🧩 Puzzle Quest</h1>
+<p>Arrange the numbers in order. Complete levels to advance!</p>
+<h2 id="level">Level 1</h2>
+<div id="board"></div>
+<button onclick="shuffle()">Shuffle</button>
+<script>
+let level=1;
+let arr=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0];
+const board=document.getElementById("board");
+
+function draw(){
+ board.innerHTML="";
+ arr.forEach((n,i)=>{
+  let d=document.createElement("div");
+  d.className="tile"+(n===0?" empty":"");
+  d.textContent=n===0?"":n;
+  d.onclick=()=>move(i);
+  board.appendChild(d);
+ });
+ if(win()){
+   setTimeout(()=>{
+     alert("Level "+level+" completed!");
+     level++;
+     document.getElementById("level").textContent="Level "+level;
+     shuffle();
+   },100);
+ }
+}
+function move(i){
+ let e=arr.indexOf(0);
+ let ok=[e-1,e+1,e-4,e+4];
+ if(ok.includes(i)){
+   [arr[i],arr[e]]=[arr[e],arr[i]];
+   draw();
+ }
+}
+function shuffle(){
+ for(let k=0;k<100+level*10;k++){
+   let e=arr.indexOf(0);
+   let moves=[e-1,e+1,e-4,e+4].filter(x=>x>=0&&x<16);
+   let m=moves[Math.floor(Math.random()*moves.length)];
+   [arr[m],arr[e]]=[arr[e],arr[m]];
+ }
+ draw();
+}
+function win(){
+ for(let i=0;i<15;i++) if(arr[i]!==i+1) return false;
+ return arr[15]===0;
+}
+shuffle();
+</script>
+</body>
+</html>
